@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Services</title>
+    <link rel="stylesheet" href="maareej.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Leaflet Geocoder CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <style>
+        #map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #map-controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        #map {
+            width: 100%;
+            height: 500px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to Our Educational Platform</h1>
+        <nav>
+            <a href="mainpage.html">Home</a>
+            <a href="workspacepage.html">Workspaces</a>
+            <a href="tutorPage.html">Tutors</a>
+        </nav>
+        <p>Your place for booking workspaces and finding tutors.</p>
+        <button onclick="location.href='booking.html'">Book Now</button>
+    </header>
+    
+    <main>
+        <section id="tutors">
+            <h2>Our Tutors</h2>
+            <div class="tutor">
+                <img src="https://picsum.photos/300/200?random=1" alt="Tutor 1">
+                <h3>Tutor Name</h3>
+                <p>Subjects: Math, Science</p>
+            </div>
+            <div class="tutor">
+                <img src="https://picsum.photos/300/200?random=2" alt="Tutor 2">
+                <h3>Tutor Name</h3>
+                <p>Subjects: English, History</p>
+            </div>
+        </section>
+
+        <section id="workspaces">
+            <h2>Our Workspaces</h2>
+            <div class="workspace">
+                <img src="https://picsum.photos/300/200?random=3" alt="Workspace 1">
+                <h3>Workspace Name</h3>
+                <p>Location: City Center</p>
+            </div>
+            <div class="workspace">
+                <img src="https://picsum.photos/300/200?random=4" alt="Workspace 2">
+                <h3>Workspace Name</h3>
+                <p>Location: Uptown</p>
+            </div>
+        </section>
+
+        <!-- Map Section -->
+        <section id="map-section">
+            <h2>Find Nearby Workspaces</h2>
+            <div id="map-container">
+                <!-- Map Controls -->
+                <div id="map-controls">
+                    <input type="text" id="location-search" placeholder="Search for a location">
+                    <button onclick="searchLocation()">Search</button>
+                    <input type="text" id="start-location" placeholder="Start location">
+                    <input type="text" id="end-location" placeholder="End location">
+                    <button onclick="calculateRoute()">Get Directions</button>
+                </div>
+                <!-- Map Div -->
+                <div id="map"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Educational Workspace</p>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Leaflet Geocoder JS -->
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <!-- Leaflet Routing Machine JS -->
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+    <script>
+        // Initialize the map and set the view to Cairo, Egypt
+        const map = L.map('map').setView([30.0444, 31.2357], 13);
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Add a marker for Cairo
+        const marker = L.marker([30.0444, 31.2357]).addTo(map);
+        marker.bindPopup("<b>Cairo</b><br>Our location here.").openPopup();
+
+        // Add Leaflet Geocoder instance
+        const geocoder = L.Control.Geocoder.nominatim();
+
+        // Search functionality
+        function searchLocation() {
+            const location = document.getElementById('location-search').value;
+            if (location) {
+                geocoder.geocode(location, results => {
+                    if (results.length > 0) {
+                        const latLng = results[0].center;
+                        map.setView(latLng, 14);
+                        L.marker(latLng).addTo(map).bindPopup(location).openPopup();
+                    } else {
+                        alert("Location not found!");
+                    }
+                });
+            }
+        }
+
+        // Initialize routing control
+        let routeControl = null;
+
+        // Calculate route based on start and end locations
+        function calculateRoute() {
+            const startLocation = document.getElementById('start-location').value;
+            const endLocation = document.getElementById('end-location').value;
+            
+            if (startLocation && endLocation) {
+                geocoder.geocode(startLocation, startResults => {
+                    if (startResults.length === 0) {
+                        alert("Start location not found!");
+                        return;
+                    }
+                    geocoder.geocode(endLocation, endResults => {
+                        if (endResults.length === 0) {
+                            alert("End location not found!");
+                            return;
+                        }
+                        // Remove existing route if any
+                        if (routeControl) {
+                            map.removeControl(routeControl);
+                        }
+
+                        // Set new waypoints and add the routing control
+                        routeControl = L.Routing.control({
+                            waypoints: [
+                                L.latLng(startResults[0].center),
+                                L.latLng(endResults[0].center)
+                            ],
+                            routeWhileDragging: true
+                        }).addTo(map);
+                    });
+                });
+            }
+        }
+    </script>
+</body>
+</html>

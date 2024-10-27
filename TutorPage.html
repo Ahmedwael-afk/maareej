@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Tutors</title>
+    <link rel="stylesheet" href="maareej.css">
+</head>
+<body>
+    <header>
+        <h1>Search Tutors</h1>
+        <nav>
+            <a href="mainpage.html">Home</a>
+            <a href="workspacePage.html">Search Workspaces</a>
+            <a href="tutorPage.html">Search Tutors</a>
+    </nav>
+    </header>
+    
+    <main>
+        <input type="text" id="tutor-name" placeholder="Search by name">
+        
+        <select id="subject">
+            <option value="">Select Subject</option>
+            <option value="math">Math</option>
+            <option value="science">Science</option>
+            <!-- Add more subjects -->
+        </select>
+        
+        <button onclick="searchTutors()">Search</button>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Educational Workspace</p>
+    </footer>
+</body>
+</html>
